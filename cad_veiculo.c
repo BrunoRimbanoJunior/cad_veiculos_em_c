@@ -30,7 +30,7 @@ struct DB_DADOS{
         char nome[30];
         char dt_nascimento[13];
         char rg[11];
-        char cpf[13];
+        char cpf[15];
     }db_condutor;
     
     struct endereco{
@@ -48,7 +48,7 @@ int front, rear ;
 };
 
 
-int main(int argc, const char * argv[]) {
+int main() {
     setlocale(LC_ALL,"portuguese");
     
     void imprime_menu(void);
@@ -57,6 +57,7 @@ int main(int argc, const char * argv[]) {
     int excluir(struct fila * pf);
     int consulta(struct fila * pf);
     int alterar(struct fila * pf, int x);
+    int posicao(struct fila *pf);
     
     //struct DB_DADOS * p;
     
@@ -71,13 +72,10 @@ int main(int argc, const char * argv[]) {
     setbuf(stdin, NULL);*/
     
     while(1){
-        
-        
         imprime_menu();
         scanf("%i", &op);
         setbuf(stdin, NULL);
-        
-        
+                
         switch (op) {
             case 1:
                 
@@ -108,10 +106,18 @@ int main(int argc, const char * argv[]) {
                 imprime_menu();
                 break;
                 
+            
+            
             case 5:
                 printf("\n\nAte logo.........\n\n");
                 exit(0);
-                
+            
+            
+            
+            case 6:
+                posicao(&f);
+                break;
+
             default:
                 printf("Opção invalida, digite uma opção valida....\n");
                 
@@ -120,19 +126,17 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-  void imprime_menu(void){
+void imprime_menu(void){
       
-    system("clear");
+    system("cls");
     printf("\n******SISTEMA DE CADASTRO DE VEICULOS E CONDUTORES******");
     printf("\nOpção \t01 - CADASTRAR");
     printf("\nOpção \t02 - EXCLUIR");
     printf("\nOpção \t03 - ALTERAR");
     printf("\nOpção \t04 - CONSULTAR");
     printf("\nOpção \t05 - SAIR\n");
-    printf("\nOPÇÃO? :");
-    
-      
-      return;
+    printf("\nOpção? :");
+    return;
     
 }
 
@@ -142,8 +146,6 @@ int i, t;
 //printf("\nValor de x recebido pela funcao: %i", x);
 //recebe o tamanho da fila tras - frente
 t = pf->rear - pf->front;
-   
-
 // se tras for igual ao tamanho da fila, verificamos o item zero e realocamos a fila
 if(pf->rear == tam-1){
     if(pf->itens[0]==1){
@@ -188,7 +190,7 @@ if(pf->rear == tam-1){
     fgets(cad_dados[pf->rear].db_condutor.rg,10, stdin);
   
     printf("\nDigite o CPF do Condutor: ");
-    fgets(cad_dados[pf->rear].db_condutor.cpf,12, stdin);
+    fgets(cad_dados[pf->rear].db_condutor.cpf,14, stdin);
    
     //dados de endereco
     printf("\nDigite o Endereco (logradouro), rua, est, rod...: ");
@@ -219,7 +221,7 @@ int excluir(struct fila * pf){
     }
     pf->front++;
     printf("\nOs seguintes dados serão excluidos, Confirma s/n?");
-    printf("\nRegistro: %i", pf->front);
+    printf("\nRegistro Numero: %i", pf->front);
     printf("\nVeiculo Modelo: %s", cad_dados[pf->front].db_veiculo.modelo);
     printf("\nNome do Conditor: %s\n", cad_dados[pf->front].db_condutor.nome);
     printf("\nCor do Veiculo: %s",cad_dados[pf->front].db_veiculo.cor);
@@ -236,11 +238,11 @@ int excluir(struct fila * pf){
     printf("\nEndereço: %s", cad_dados[pf->front].db_endereco.logradouro);
     printf("\nCidade: %s \tEstado: %s",cad_dados[pf->front].db_endereco.cidade,cad_dados[pf->front].db_endereco.uf );
     printf("\nCep: %i\n",cad_dados[pf->front].db_endereco.cep );
-    printf("\nOpcao ?: ");
+    printf("\nOpção ?: ");
     
     
     scanf("%s", q);
-    if ((q=='n')){
+    if ((q=="n")){
         printf("Dados não excluidos");
         getchar();
         setbuf(stdin,NULL);
@@ -305,7 +307,6 @@ int consulta(struct fila * pf){
     int i, cont,x, reg;
     //verificar o tamanho da fila
     cont= pf->rear - pf->front;
-    x = pf->front;
     reg = 1;
     
     
@@ -319,7 +320,6 @@ int consulta(struct fila * pf){
         printf("\nNumero de Registros: %i", cont);
         for(i=pf->front+1; i<cont; i++){
             printf("\n***********Registro  : %i****************\n", reg);
-            printf("\nOs seguintes dados serão excluidos, Confirma s/n?");
             printf("\nRegistro: %i", i);
             printf("\nVeiculo Modelo: %s", cad_dados[i].db_veiculo.modelo);
             printf("\nFabricante: %s", cad_dados[i].db_veiculo.modelo);
@@ -335,20 +335,20 @@ int consulta(struct fila * pf){
                 
             //dados de endereco
             printf("\nEndereço: %s", cad_dados[i].db_endereco.logradouro);
-            printf("\nCidade: %s Estado: %s",cad_dados[i].db_endereco.cidade,cad_dados[i].db_endereco.uf );
+            printf("\nCidade: %s - Estado: %s",cad_dados[i].db_endereco.cidade,cad_dados[i].db_endereco.uf );
             printf("\nCep: %i",cad_dados[i].db_endereco.cep );
             reg++;
         };
   
     
-        printf("\nTotal de registros Processados: %i\n", reg);
+        printf("\nTotal de registros Processados: %i\n", i);
         printf("\n\n***********FIM DOS REGISTROS***************\n\n");
         getchar();
         setbuf(stdin,NULL);
         return 0;
 }
 
-//verifica se a fila esta vazia
+//verifica se a fila esta vazia, se o primeiro da fila for igual ao ultimo a fila esta vazia, retornamos ao valor inicial
 int vazio(struct fila * pf){
 if( pf->front == pf->rear){
     pf->front = -1;
@@ -358,4 +358,11 @@ if( pf->front == pf->rear){
     return 0;
 }
 
+int posicao(struct fila *pf){
+    printf("\nValor na Posição Front: %i", pf->front);
+    printf("\nValor na Posição Rear: %i", pf->rear);
+    getchar();
+    setbuf(stdin,NULL);
 
+    return 0;
+}
